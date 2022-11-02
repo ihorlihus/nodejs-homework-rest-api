@@ -48,10 +48,22 @@ const addContact = async (body) => {
   );
 };
 
-const updateContact = async (
-  contactId,
-  body
-) => {};
+const updateContact = async (contactId, body) => {
+  const newContact = {
+    contactId,
+    name: body.name,
+    email: body.email,
+    phone: body.phone,
+  };
+  const deletedContact = await removeContact(
+    contactId
+  );
+  if (!deletedContact) {
+    return;
+  }
+  await addContact(newContact);
+  return newContact;
+};
 
 module.exports = {
   listContacts,
