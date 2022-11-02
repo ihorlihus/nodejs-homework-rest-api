@@ -1,8 +1,15 @@
 const express = require("express");
-// const uniqid = require("uniqid");
-// const joi = require("joi");
+const uniqid = require("uniqid");
+const Joi = require("joi");
 
 const router = express.Router();
+
+const schema = Joi.object().keys({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
+
 const {
   listContacts,
   getContactById,
@@ -33,7 +40,25 @@ router.get(
 );
 
 router.post("/", async (req, res, next) => {
-  // const id = uniqid();
+  const { name, email, phone } = req.body;
+  const id = uniqid();
+  try {
+    const { error, value } = schema.validate({
+      name,
+      email,
+      phone,
+    });
+    console.log("valid");
+    const newContact = {
+      id,
+      name,
+      email,
+      phone,
+    };
+    console.log(newContact);
+  } catch (error) {
+    console.error(error.message);
+  }
 
   res.json({ message: "template message" });
 });
