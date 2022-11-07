@@ -1,38 +1,24 @@
 const express = require("express");
-const uniqid = require("uniqid");
-const Joi = require("joi");
-
 const router = express.Router();
-
-const schema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-    tlds: { allow: ["com", "net"] },
-  }),
-  phone: Joi.string().required(),
-});
-
 const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("../../models/contacts");
+  tryCatchWrapper,
+} = require("../../helpers");
+const {
+  getAll,
+} = require("../../models/contactsFn");
+const {
+  Contact,
+} = require("../../models/contacts.model.");
 
-router.get("/", async (req, res, next) => {
-  const contacts = await listContacts();
-  return res.status(200).send(contacts);
-});
+router.get("/", tryCatchWrapper(getAll));
 
 router.get(
   "/:contactId",
   async (req, res, next) => {
     const { contactId } = req.params;
-    const contact = await getContactById(
-      contactId
-    );
+    const contact = await Contact.findOne({
+      _id: contactId,
+    });
     if (!contact) {
       return res
         .status(404)
@@ -43,27 +29,13 @@ router.get(
 );
 
 router.post("/", async (req, res, next) => {
-  const id = uniqid();
   const { name, email, phone } = req.body;
-
-  const { error, value } = schema.validate({
-    name,
-    email,
-    phone,
-  });
-  if (error) {
-    console.log("res: ", error, value);
-    return res.status(400).json({
-      message: "missing required name field",
-    });
-  }
   const newContact = {
-    id,
     name,
     email,
     phone,
   };
-  addContact(newContact);
+  Contact.create(newContact);
   return res.status(201).send(newContact);
 });
 
@@ -71,9 +43,10 @@ router.delete(
   "/:contactId",
   async (req, res, next) => {
     const { contactId } = req.params;
-    const contact = await removeContact(
-      contactId
-    );
+    const contact =
+      await Contact.findByIdAndRemove({
+        _id: contactId,
+      });
     if (!contact) {
       return res
         .status(404)
@@ -90,26 +63,39 @@ router.put(
   async (req, res, next) => {
     const { contactId } = req.params;
     const { name, email, phone } = req.body;
-    const { error, value } = schema.validate({
-      name,
-      email,
-      phone,
-    });
-    if (error) {
-      console.log("res: ", error, value);
-      return res
-        .status(400)
-        .json({ message: "missing fields" });
-    }
     const body = {
       name,
       email,
       phone,
     };
-    const newContact = await updateContact(
-      contactId,
-      body
-    );
+    const newContact =
+      await Contact.findByIdAndUpdate(
+        { _id: contactId },
+        body,
+        { new: true }
+      );
+
+    if (!newContact) {
+      return res
+        .status(404)
+        .json({ message: "Not found" });
+    }
+    return res.status(201).send(newContact);
+  }
+);
+
+router.patch(
+  "/:contactId/favorite",
+  async (req, res, next) => {
+    const { contactId } = req.params;
+    const body = req.body;
+    const newContact =
+      await Contact.findByIdAndUpdate(
+        { _id: contactId },
+        { favorite: body.favorite },
+        { new: true }
+      );
+
     if (!newContact) {
       return res
         .status(404)
