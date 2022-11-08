@@ -11,13 +11,13 @@ async function main() {
     await mongoose.connect(DB_HOST);
     console.log("Database connection successful");
     app.listen(PORT, () => {
-      console.log(
-        `Server running. Use our API on port: ${PORT}`
-      );
+      console.log(`Server running. Use our API on port: ${PORT}`);
     });
   } catch (error) {
-    console.error("Error:", error.message);
-    process.exit(1);
+    if (error.name === "MongoServerError") {
+      console.error("Error:", error.message);
+      process.exit(1);
+    }
   }
 }
 
