@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+
 const Joi = require("joi");
 
 const schemaValidMailPassJoi = Joi.object({
@@ -32,11 +33,22 @@ const usersSchema = new Schema({
   },
   contacts: [
     {
-      type: Schema.Types.Object,
+      type: Schema.Types.ObjectId,
       ref: "contacts",
     },
   ],
 });
+
+// usersSchema.pre("save", async function (next) {
+//   const user = this;
+
+//   if (!user.isModified("password")) next();
+
+//   const salt = await bcrypt.genSalt();
+//   const hashedPassword = await bcrypt.hash(user.password, salt);
+//   user.password = hashedPassword; // change password with hashed password
+//   next();
+// });
 
 const User = model("user", usersSchema);
 
