@@ -2,8 +2,10 @@ const { Contact } = require("../models/contacts.model.");
 const { notFoundMessage } = require("../helpers");
 
 async function getAll(req, res, next) {
-  const contacts = await Contact.find();
-  return res.status(200).send(contacts);
+  const { limit, page } = req.query;
+  const skip = (page - 1) * limit;
+  const contacts = await Contact.find({}).skip(skip).limit(limit);
+  return res.status(200).send({ data: contacts });
 }
 
 async function getContactById(req, res, next) {
