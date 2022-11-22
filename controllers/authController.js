@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const JWT_SECRET = process.env;
 
-async function register(req, res, next) {
+async function signup(req, res, next) {
   const { email, password } = req.body;
   const salt = await bcrypt.genSalt();
   const hashedPass = await bcrypt.hash(password, salt);
@@ -48,13 +48,11 @@ async function logout(req, res, next) {
 
   user.token = null;
   await User.findByIdAndUpdate(user._id, user);
-  console.log(user);
-  return res.json(user.email);
-
+  return res.json({ data: user });
 }
 
 module.exports = {
-  register,
+  signup,
   login,
   logout,
 };

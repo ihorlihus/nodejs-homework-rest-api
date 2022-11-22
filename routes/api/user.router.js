@@ -1,20 +1,21 @@
 const express = require("express");
 const userRouter = express.Router();
 const { tryCatchWrapper } = require("../../helpers");
-const { middleware } = require("../../middlewares/middleware");
+const { tokenCheck } = require("../../middlewares/auth");
 const {
   userContactsGet,
   userContactCreate,
 } = require("../../controllers/usersController");
 
 userRouter.get(
-  "/contacts",
-  tryCatchWrapper(middleware),
+  "/current",
+  tryCatchWrapper(tokenCheck),
   tryCatchWrapper(userContactsGet)
 );
+
 userRouter.post(
   "/contacts",
-  tryCatchWrapper(middleware),
+  tryCatchWrapper(tokenCheck),
   tryCatchWrapper(userContactCreate)
 );
 
