@@ -6,10 +6,11 @@ require("dotenv").config();
 const JWT_SECRET = process.env;
 
 async function signup(req, res, next) {
-  const { email, password } = req.body;
+  const { email, password } = req.user;
   const salt = await bcrypt.genSalt();
   const hashedPass = await bcrypt.hash(password, salt);
   const user = new User({ email, password: hashedPass });
+
   try {
     await user.save();
   } catch (error) {
@@ -23,7 +24,7 @@ async function signup(req, res, next) {
 }
 
 async function login(req, res, next) {
-  const { email, password } = req.body;
+  const { email, password } = req.user;
   const user = await User.findOne({ email });
   if (!user) {
     throw new Unauthorized("Email or password is wrong");
