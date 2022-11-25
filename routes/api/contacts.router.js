@@ -8,7 +8,7 @@ const {
   removeContact,
   updateContact,
   updateStatus,
-} = require("../../models/contactsFn");
+} = require("../../controllers/contactsController");
 
 router.get("/", tryCatchWrapper(getAll));
 router.get("/:contactId", tryCatchWrapper(getContactById));
