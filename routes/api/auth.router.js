@@ -4,10 +4,12 @@ const { tryCatchWrapper } = require("../../helpers");
 const { validationUser } = require("../../middlewares/validation");
 const { tokenCheck } = require("../../middlewares/auth");
 const { signup, login, logout } = require("../../controllers/authController");
+const { avatarForTmp } = require("../../middlewares/avatarForTmp");
 
 authRouter.post(
   "/signup",
   tryCatchWrapper(validationUser),
+  tryCatchWrapper(avatarForTmp),
   tryCatchWrapper(signup)
 );
 authRouter.post(
