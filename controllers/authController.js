@@ -3,7 +3,7 @@ const { Conflict, Unauthorized } = require("http-errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const JWT_SECRET = process.env;
+const { JWT_SECRET } = process.env;
 
 async function signup(req, res, next) {
   const { email, password } = req.user;
@@ -33,7 +33,7 @@ async function login(req, res, next) {
   if (!isPasswordCorrect) {
     throw new Unauthorized("Email or password is wrong");
   }
-  const token = jwt.sign({ _id: user._id }, JWT_SECRET.toString(), {
+  const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
     expiresIn: "15m",
   });
   user.token = token;
