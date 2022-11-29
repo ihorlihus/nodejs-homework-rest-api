@@ -14,9 +14,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 async function avatarToUserToPublic(req, res, next) {
-  const { file } = req;
+  const { file, user } = req;
   const newPath = path.join(
-    "public/avatars",
+    "public",
     nanoid() + "-" + req.user.email + "-" + file.filename
   );
   await fs.rename(file.path, newPath);
@@ -26,10 +26,11 @@ async function avatarToUserToPublic(req, res, next) {
     avatar.resize(250, 250).write(newPath);
   });
 
+  user.avatarURL = file.path;
+  const avatarURL = user.avatarURL;
+
   return res.status(201).json({
-    data: {
-      file,
-    },
+    avatarURL,
   });
 }
 
