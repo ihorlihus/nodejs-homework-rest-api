@@ -6,10 +6,10 @@ require("dotenv").config();
 const { JWT_SECRET } = process.env;
 
 async function signup(req, res, next) {
-  const { email, password } = req.user;
+  const user = req.user;
   const salt = await bcrypt.genSalt();
-  const hashedPass = await bcrypt.hash(password, salt);
-  const user = new User({ email, password: hashedPass });
+  const hashedPass = await bcrypt.hash(user.password, salt);
+  user.password = hashedPass;
 
   try {
     await user.save();
@@ -20,7 +20,7 @@ async function signup(req, res, next) {
     }
     throw error;
   }
-  return res.status(201).json({ user: { _id: user._id } });
+  return res.status(201).json({ user });
 }
 
 async function login(req, res, next) {

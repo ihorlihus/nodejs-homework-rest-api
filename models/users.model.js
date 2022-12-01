@@ -26,6 +26,10 @@ const usersSchema = new Schema({
       ref: "contacts",
     },
   ],
+  avatarURL: {
+    type: String,
+    default: null,
+  },
 });
 
 const User = model("user", usersSchema);
