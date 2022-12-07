@@ -4,6 +4,10 @@ const { tryCatchWrapper } = require("../../helpers");
 const { validationUser } = require("../../middlewares/validation");
 const { tokenCheck } = require("../../middlewares/auth");
 const { signup, login, logout } = require("../../controllers/authController");
+const {
+  verifyEmail,
+  resendEmail,
+} = require("../../middlewares/sendVerifiEmail");
 const { avatarForTmp } = require("../../middlewares/avatarForTmp");
 
 authRouter.post(
@@ -17,6 +21,8 @@ authRouter.post(
   tryCatchWrapper(validationUser),
   tryCatchWrapper(login)
 );
+authRouter.get("/verify/:verificationToken", tryCatchWrapper(verifyEmail));
+authRouter.post("/verify", tryCatchWrapper(resendEmail));
 authRouter.get("/logout", tryCatchWrapper(tokenCheck), tryCatchWrapper(logout));
 
 module.exports = authRouter;
