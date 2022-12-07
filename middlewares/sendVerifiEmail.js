@@ -44,6 +44,10 @@ async function resendEmail(req, res, next) {
     return res.status(err.status).json(err.message);
   }
   const user = await User.findOne({ email });
+  const error = user.validateSync();
+  if (error) {
+    return res.status(401).json(error);
+  }
   if (user.verify) {
     const err = new BadRequest("Verification has already been passed");
     return res.status(err.status).json(err.message);
