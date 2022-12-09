@@ -1,7 +1,7 @@
 const gravatar = require("gravatar");
 
 async function avatarForTmp(req, res, next) {
-  const { email } = req.user;
+  const { email } = req.body;
   const avatar = gravatar.url(
     email,
     {
